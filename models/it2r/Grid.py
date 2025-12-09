@@ -1,28 +1,52 @@
-'''
-The first iteration does not follow Lotka-Volterra exactly because it does not simulate unlimited hunger by predators.
-Iteration two tries to get closer to this notion
-'''
-import json
-
 import random as rd
 import copy
 
-# Parameters
-a = 0.8 # Probability that if a prey gets paired with a predator, it will die
-b = 0.1 # Probability that if a predator gets paired with a prey, it will reproduce
-c = 0.01 # Probability that a prey will reproduce
-d = 0 # Probability of death for a predator
+from AnimalParameters import AnimalParameters
+from GraphOptions import GraphOptions
 
-# Number of turns
-num_turns = 3
+class Grid:
+    def __init__(self, o: GraphOptions, p: AnimalParameters):
+        self.grid = create_grid(o.col_num, o.row_num, o.init_num_pred, o.init_num_prey)
+        self.init_prey = o.init_num_prey
+        self.init_pred = o.init_num_prey
+        self.col_num = o.col_num
+        self.row_num = o.row_num
+        self.a = p.a
+        self.b = p.b
+        self.c = p.c
+        self.d = p.d
 
-# Define grid as n by n grid of empty lists
-col_num = row_num = 10
+    def turn(self):
+        self.move()
+        self.eating()
+        self.prey_spawn()
+        self.predator_death()
 
+    
+    def move(self):
+        self.grid = move(self.grid, self.row_num, self.col_num)
 
-# Add initial animals
-initial_num_predators = 60
-initial_num_prey = 100
+    def eating(self):
+        self.grid = eating(self.grid, self.a, self.b)
+    
+    def prey_spawn(self):
+        self.grid = prey_spawn(self.grid, self.c)
+    
+    def predator_death(self):
+        self.grid = predator_death(self.grid, self.d)
+
+    def an_count(self):
+        return an_count(self.grid)
+    
+    # Printing grid
+    def print_grid(self):
+        print('----Outputting grid----')
+        for row in self.grid:
+            print(row)
+    
+
+    
+
 
 def put_into_rd_grid_space(object, row_num, col_num, grid):
     random_row = rd.randint(0, row_num - 1)
@@ -30,7 +54,7 @@ def put_into_rd_grid_space(object, row_num, col_num, grid):
     grid[random_row][random_column].append(object)
     return grid
 
-def create_grid(col_num, row_num):
+def create_grid(col_num, row_num, initial_num_predators, initial_num_prey):
     grid = [[[] for _ in range(col_num)] for _ in range(row_num)]
     for _ in range(initial_num_predators):
         # random 0 to 9 * 2 and put into that grid space
@@ -40,7 +64,6 @@ def create_grid(col_num, row_num):
         grid = put_into_rd_grid_space('prey', row_num, col_num, grid)
     
     return grid
-
 
 
 # Define movement
@@ -128,8 +151,7 @@ def predator_death(grid, d):
     
     return new_grid
 
-
-def counting(grid):
+def an_count(grid):
     prey_count = 0
     predator_count = 0
 
@@ -143,85 +165,3 @@ def counting(grid):
     
     return prey_count, predator_count
 
-
-# Printing grid
-def print_grid(grid):
-    print('----Outputting grid----')
-    for row in grid:
-        print(row)
-
-
-# Run experiment and output to dat file
-def out_to_dat(file_name, initial_num_prey, initial_num_predators, row_num, col_num, num_turns, a, b, c, d):
-    with open(file_name, 'w') as file:
-        file.write(f'0 {initial_num_prey} {initial_num_predators}')
-
-        grid = create_grid(col_num, row_num)
-        
-        prey_count = 0
-        for i in range(num_turns):
-
-            # Stop exponential growth
-            if prey_count > 100 * initial_num_prey:
-                return
-            
-            turn = i + 1
-            grid = move(grid, row_num, col_num)
-            grid = eating(grid, a, b)
-            grid = prey_spawn(grid, c)
-            grid = predator_death(grid, d)
-            prey_count, predator_count = counting(grid)
-            file.write(f'\n{turn} {prey_count} {predator_count}')
-
-
-# Run experiment with standard out
-def out_to_std(initial_num_prey, initial_num_predators, row_num, col_num, num_turns, a, b, c, d):
-    print(f'Initial, Prey count: {initial_num_prey}, Predator count: {initial_num_predators}')
-
-    grid = create_grid(col_num, row_num)
-
-    for i in range(num_turns):
-        turn = i + 1
-        grid = move(grid, row_num, col_num)
-        grid = eating(grid, a, b)
-        grid = prey_spawn(grid, c)
-        grid = predator_death(grid, d)
-        prey_count, predator_count = counting(grid)
-        print(f'Turn: {turn}, Prey count: {prey_count}, Predator count: {predator_count}')
-
-def out_to_dat_with_grid(file_name, file_name_grid, initial_num_prey, initial_num_predators, row_num, col_num, num_turns, a, b, c, d):
-    with open(file_name, 'w') as file:
-        file.write(f'0 {initial_num_prey} {initial_num_predators}')
-
-        grid = create_grid(col_num, row_num)
-
-        grid_data = {'timestamp1': copy.deepcopy(grid)}
-        
-        prey_count = 0
-        for i in range(num_turns):
-
-            # Stop exponential growth
-            if prey_count > 100 * initial_num_prey:
-                break
-            
-            turn = i + 1
-            grid = move(grid, row_num, col_num)
-            grid = eating(grid, a, b)
-            grid = prey_spawn(grid, c)
-            grid = predator_death(grid, d)
-            prey_count, predator_count = counting(grid)
-            file.write(f'\n{turn} {prey_count} {predator_count}')
-            grid_data['timestamp' + str(i)] = copy.deepcopy(grid)
-
-    with open(file_name_grid, 'w') as file_grid:
-        json.dump(grid_data, file_grid)
-            
-
-
-
-# out_to_std(grid, initial_num_prey, initial_num_predators, row_num, col_num, num_turns)
-
-if __name__ == '__main__':
-    file_name = 'data/test.dat'
-    file_name_grid = 'data/test-grid.json'
-    out_to_dat_with_grid(file_name, file_name_grid, initial_num_prey, initial_num_predators, row_num, col_num, num_turns, a, b, c, d)
