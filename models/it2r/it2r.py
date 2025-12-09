@@ -5,6 +5,7 @@ from AnimalParameters import AnimalParameters
 from GraphOptions import GraphOptions
 from Experimenter import Experimenter
 from ExperimentOptions import ExperimentOptions
+from Analyser import Analyser
 
 # Parameters
 a = 0.8 # Probability that if a prey gets paired with a predator, it will die
@@ -27,5 +28,5 @@ exops = ExperimentOptions(experiment_name, num_turns)
 
 if __name__ == '__main__':
     experiment = Experimenter(options, parameters, exops)
-    experiment.out_to_files()  
-    print('finished')
+    # analyse = Analyser('output/test', 'test')
+    experiment.out_to_files()

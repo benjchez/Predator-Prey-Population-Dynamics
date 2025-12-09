@@ -1,28 +1,47 @@
 from pathlib import Path
+import json
 
 import pandas as pd
 import matplotlib.pyplot as plt
+from matplotlib.image import AxesImage
 import numpy as np
 
 class Analyser:
-    def __init__(self, path_to_experiment, name_of_experiment):
+    def __init__(self, rel_path_to_experiment, name_of_experiment):
 
-        self.dir = Path(__file__).parent / 'data' / path_to_experiment
-        dat_file = name_of_experiment + ".dat"
-        json_file = name_of_experiment + ".json"
-        self.datf = self.dir / dat_file
-        self.jsonf = self.dir / json_file
+        self.dir = Path(__file__).parent / 'data' / rel_path_to_experiment
 
-        self.nums = pd.read_csv(self.datf, sep = ' ', header = None)
+        pop_file = name_of_experiment + "_pop.dat"
+        graph_file = name_of_experiment + "_graph.json"
+        param_file = name_of_experiment + "_params.json"
+        notes_file = name_of_experiment + "_notes.txt"
+        self.popf = self.dir / pop_file
+        self.graphf = self.dir / graph_file
+        self.paramf = self.dir / param_file
+        self.notesf = self.dir / notes_file
+
+        self.nums = pd.read_csv(self.popf, sep = ' ', header = None)
         column_names = ['Time step', 'Prey number', 'Predator number']
         self.nums.columns = column_names
-        self.gd = pd.read_json(self.jsonf)
+        self.gd = pd.read_json(self.graphf)
 
-        # Check if these are the right way round
+        # TODO: Check if these are the right way round
         self.rn = len(self.gd['timestamp0'])
         self.cn = len(self.gd['timestamp0'][0])
 
+        with open(self.paramf, 'r') as file:
+            self.params = json.load(file)
+
         self.point_map()
+
+    def notes(self):
+        with open(self.notesf, 'r') as file:
+            text = file.read()
+        return text
+
+    def up_notes(self, text):
+        with open(self.notesf, 'w') as file:
+            file.write(text)
     
     def plt_nums(self):
         fig, ax = plt.subplots()
@@ -34,16 +53,30 @@ class Analyser:
         ax.legend()
         return fig
     
-    def pmft(self, timestamp: int) -> np.ndarray:
-        """Returns the point map at a fixed time timestamp as a numpy array.
+    def show_pmft(self, timestamp: int):
+        """Calculate and shows point map at fixed time point.
+
+        Args:
+            timestamp (int): Time point
+        """
+        self.pmft(timestamp)
+        plt.show()
+    
+    def pmft(self, timestamp: int) -> AxesImage:
+        """Returns the point map at a fixed time timestamp as an \n
+        image.
 
         Args:
             timestamp (int): fixed time
 
         Returns:
-            np.ndarray: array ready to be used as an image.
+            AxesImage: pmft image
         """
-        return np.array(self.pm[timestamp])
+        pm_ft = self.pm[timestamp]
+        arr = np.array(pm_ft)
+        image = plt.imshow(arr)
+        return image 
+    
     
     def point_map(self):
         point_map = []

@@ -2,6 +2,7 @@ import json
 import copy
 import os
 from pathlib import Path
+from dataclasses import asdict
 
 from Grid import Grid
 from GraphOptions import GraphOptions
@@ -12,13 +13,20 @@ class Experimenter:
     """Different methods to conduct experiments and output results.
     """
     def __init__(self, o: GraphOptions, p: AnimalParameters, e: ExperimentOptions):
+        self.o = o
+        self.p = p
+        self.e = e
         self.nt = e.num_turns
         self.g = Grid(o, p) 
         self.dir = Path(__file__).parent / "data" / "output" / e.experiment_name
-        dat_file = e.experiment_name + ".dat"
-        json_file = e.experiment_name + ".json"
-        self.datf = self.dir / dat_file
-        self.jsonf = self.dir / json_file
+        pop_file = e.experiment_name + "_pop.dat"
+        graph_file = e.experiment_name + "_graph.json"
+        param_file = e.experiment_name + "_params.json"
+        notes_file = e.experiment_name + "_notes.txt"
+        self.popf = self.dir / pop_file
+        self.graphf = self.dir / graph_file
+        self.paramf = self.dir / param_file
+        self.notesf = self.dir / notes_file
         os.makedirs(self.dir, exist_ok = True)
 
     # Run experiment with standard out
@@ -40,7 +48,16 @@ class Experimenter:
         turn prey_count predator_count\n
         and puts grid into file_name_grid as json.
         """
-        with open(self.datf, 'w') as file:
+        with open(self.paramf, 'w') as file:
+            params = {'Animal options': asdict(self.p),
+                      'Graph options': asdict(self.o),
+                      'Experiment options': asdict(self.e)}
+            json.dump(params, file)
+
+        with open(self.notesf, 'w') as file:
+            pass
+
+        with open(self.popf, 'w') as file:
             file.write(f'0 {self.g.init_prey} {self.g.init_pred}')
 
             grid_data = {'timestamp1': copy.deepcopy(self.g.grid)}
@@ -58,5 +75,5 @@ class Experimenter:
                 file.write(f'\n{turn} {prey_count} {predator_count}')
                 grid_data['timestamp' + str(i)] = copy.deepcopy(self.g.grid)
 
-        with open(self.jsonf, 'w') as file_grid:
+        with open(self.graphf, 'w') as file_grid:
             json.dump(grid_data, file_grid)
