@@ -39,15 +39,15 @@ def _(an):
 
 @app.cell
 def _(an, mo):
-    timestamp1 = mo.ui.slider(start=0, stop = an.nts - 1, step=1, full_width=True)
-    # timestamp2 = mo.ui.number(value = 0, stop = num_time_stamps - 1)
-    return (timestamp1,)
+    #timestamp1 = mo.ui.slider(start=0, stop = an.nts - 1, step=1, full_width=True)
+    timestamp2 = mo.ui.number(value = 0, stop = an.nts - 1)
+    return (timestamp2,)
 
 
 @app.cell
-def _(an, timestamp1):
-    timestamp = timestamp1.value
-    #timestamp = timestamp2.value
+def _(an, timestamp2):
+    #timestamp = timestamp1.value
+    timestamp = timestamp2.value
     img = an.pmft(timestamp)
     return (img,)
 
@@ -141,9 +141,9 @@ def _(mo):
 
 
 @app.cell
-def _(timestamp1):
-    timestamp1
-    # timestamp2
+def _(timestamp2):
+    #timestamp1
+    timestamp2
     return
 
 
