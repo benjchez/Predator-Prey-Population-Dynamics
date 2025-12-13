@@ -5,6 +5,8 @@ import os
 import pandas as pd
 
 class ExperimentData:
+    graphd: pd.DataFrame
+
     def __init__(self, popd, graphd, paramd, notesd):
         self.popd = popd
         self.graphd = graphd
