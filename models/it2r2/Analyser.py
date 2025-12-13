@@ -1,32 +1,11 @@
-import json
-import os
-
 import matplotlib.pyplot as plt
 from matplotlib.image import AxesImage
 import numpy as np
 
 from FiledExperimentData import FiledExperimentData
-from ExperimentData import ExperimentData
 
 class Analyser:
-    """A class for analysing data from an experiment.
-
-    On initialisation it will get the experiment data from file and create a point map.
-
-    Attributes:
-        fd (FiledExperimentData): the experiment data connected to the files it is saved in.
-        d (ExperimentData): the experiment data
-    """
-    fd: FiledExperimentData
-    d: ExperimentData
-    
-    def __init__(self, rel_path_to_experiment: str, name_of_experiment: str):
-        """Initialise the analyser with data from a previous experiment.
-
-        Args:
-            rel_path_to_experiment (str): the path to the experiment (and including) the experiment folder from (and not including) the data folder for the model
-            name_of_experiment (str): the name of the experiment (ie the name of the folder that the experiment is saved in)
-        """
+    def __init__(self, rel_path_to_experiment, name_of_experiment):
 
         self.fd = FiledExperimentData.from_files(data_folder = rel_path_to_experiment, experiment_name = name_of_experiment)
 
@@ -59,7 +38,8 @@ class Analyser:
         plt.show()
     
     def pmft(self, timestamp: int) -> AxesImage:
-        """Returns the point map at a fixed time timestamp as an image.
+        """Returns the point map at a fixed time timestamp as an \n
+        image.
 
         Args:
             timestamp (int): fixed time
@@ -70,22 +50,10 @@ class Analyser:
         pm_ft = self.pm[timestamp]
         arr = np.array(pm_ft)
         image = plt.imshow(arr)
-        return image
-    
-    def write_pm(self):
-        # IN PROGRESS
-        self.pm
-        analysis_dir = self.fd.dir / 'analysis'
-        file_name = 'pointmap.json'
-        file_path = analysis_dir /file_name
-        os.makedirs(analysis_dir)
-        with open(file_path, 'w') as file:
-            json.dump(self.pm, file)
+        return image 
     
     
     def point_map(self):
-        self.pm: list
-
         point_map = []
 
         num_time_stamps = len(self.d.graphd.columns)

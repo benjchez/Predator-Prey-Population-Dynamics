@@ -28,6 +28,5 @@ exops = ExperimentOptions(experiment_name, num_turns)
 
 if __name__ == '__main__':
     experiment = Experimenter(options, parameters, exops)
-    analyse = Analyser('output/test', 'test')
-    analyse.write_pm()
-    # experiment.out_to_files()
+    # analyse = Analyser('output/test', 'test')
+    experiment.out_to_files()
