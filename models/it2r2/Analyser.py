@@ -1,12 +1,5 @@
-import json
-import os
-
-import matplotlib.pyplot as plt
-from matplotlib.image import AxesImage
-import numpy as np
-
-from FiledExperimentData import FiledExperimentData
-from ExperimentData import ExperimentData
+from ExperimentData import ExperimentData, FiledExperimentData
+from AnalysisData import AnalysisData
 
 class Analyser:
     """A class for analysing data from an experiment.
@@ -17,10 +10,12 @@ class Analyser:
         fd (FiledExperimentData): the experiment data connected to the files it is saved in.
         d (ExperimentData): the experiment data
     """
-    fd: FiledExperimentData
-    d: ExperimentData
+
+    ed: ExperimentData
+    rn: int
+    cn: int
     
-    def __init__(self, rel_path_to_experiment: str, name_of_experiment: str):
+    def __init__(self, ed: ExperimentData):
         """Initialise the analyser with data from a previous experiment.
 
         Args:
@@ -28,72 +23,45 @@ class Analyser:
             name_of_experiment (str): the name of the experiment (ie the name of the folder that the experiment is saved in)
         """
 
-        self.fd = FiledExperimentData.from_files(data_folder = rel_path_to_experiment, experiment_name = name_of_experiment)
+        self.ed = ed
 
-        self.d = self.fd.d
+        self.cn = self.ed.paramd['Graph options']['col_num']
+        self.rn = self.ed.paramd['Graph options']['row_num']
 
-        # TODO: Check if these are the right way round
-        self.rn = len(self.d.graphd['timestamp0'])
-        self.cn = len(self.d.graphd['timestamp0'][0])
-
-        self.point_map()
-
+    @classmethod
+    def from_files(
+        cls,
+        rel_path_to_experiment: str,
+        name_of_experiment: str
+    ):
+        
+        FED = FiledExperimentData.from_files(
+            data_folder = rel_path_to_experiment,
+            experiment_name = name_of_experiment,
+        )
+        
+        return(cls(ed = FED.d))
     
-    def plt_nums(self):
-        fig, ax = plt.subplots()
-        ax.plot(self.d.popd['Time step'], self.d.popd['Prey number'], 'b', label = 'Prey')
-        ax.plot(self.d.popd['Time step'], self.d.popd['Predator number'], 'r', label = 'Predators')
-        ax.set_xlabel('Time step')
-        ax.set_ylabel('Population number')
-        ax.grid(True)
-        ax.legend()
-        return fig
-    
-    def show_pmft(self, timestamp: int):
-        """Calculate and shows point map at fixed time point.
+    def analyse(self) -> AnalysisData:
+        pm, info = self.point_map()
+        ad = AnalysisData(
+            pmd = pm,
+            infod = info,
+            notesd = '',
+        )
 
-        Args:
-            timestamp (int): Time point
-        """
-        self.pmft(timestamp)
-        plt.show()
+        return ad      
     
-    def pmft(self, timestamp: int) -> AxesImage:
-        """Returns the point map at a fixed time timestamp as an image.
-
-        Args:
-            timestamp (int): fixed time
-
-        Returns:
-            AxesImage: pmft image
-        """
-        pm_ft = self.pm[timestamp]
-        arr = np.array(pm_ft)
-        image = plt.imshow(arr)
-        return image
-    
-    def write_pm(self):
-        # IN PROGRESS
-        self.pm
-        analysis_dir = self.fd.dir / 'analysis'
-        file_name = 'pointmap.json'
-        file_path = analysis_dir /file_name
-        os.makedirs(analysis_dir)
-        with open(file_path, 'w') as file:
-            json.dump(self.pm, file)
-    
-    
-    def point_map(self):
-        self.pm: list
-
+    def point_map(self) -> tuple[list, dict]:
         point_map = []
+        info = {}
 
-        num_time_stamps = len(self.d.graphd.columns)
+        num_time_stamps = len(self.ed.graphd.columns)
 
         max_num = 0
 
         for t in range(num_time_stamps):
-            graph = self.d.graphd['timestamp' + str(t)]
+            graph = self.ed.graphd['timestamp' + str(t)]
             point_map.append([[[0, 0, 0] for _ in range(self.rn)] for _ in range(self.cn)])
             for row in range(self.rn):
                 for column in range(self.cn):
@@ -121,5 +89,6 @@ class Analyser:
                     point_map[t][row][column][0] *= scale
                     point_map[t][row][column][2] *= scale
 
-        self.nts = num_time_stamps
-        self.pm = point_map
+        info['number of time stamps'] = num_time_stamps
+
+        return point_map, info

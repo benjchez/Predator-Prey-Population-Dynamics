@@ -15,7 +15,16 @@ def _():
     from Experimenter import Experimenter
     from Analyser import Analyser
     from ExperimentOptions import ExperimentOptions
-    return AnimalParameters, ExperimentOptions, Experimenter, GraphOptions, mo
+    from EnAData import EnAData
+    return (
+        Analyser,
+        AnimalParameters,
+        EnAData,
+        ExperimentOptions,
+        Experimenter,
+        GraphOptions,
+        mo,
+    )
 
 
 @app.cell
@@ -64,7 +73,9 @@ def _(exops, mo, ops, params, run_btn):
 
 @app.cell
 def _(
+    Analyser,
     AnimalParameters,
+    EnAData,
     ExperimentOptions,
     Experimenter,
     GraphOptions,
@@ -78,8 +89,18 @@ def _(
         ps = AnimalParameters(**params.value)
         os = GraphOptions(**ops.value)
         exos = ExperimentOptions(**exops.value)
+    
         e = Experimenter(os, ps, exos)
-        e.out_to_files()
+        exp_data = e.run_experiment()
+
+        an = Analyser(exp_data)
+        an_data = an.analyse()
+
+        EnAd = EnAData(ed = exp_data, ad = an_data)
+
+        FEnAd = EnAd.to_files(
+            experiment_name = exops.value['experiment_name']
+        )
 
         mo.output.append('--- Experiment finished ---')
 

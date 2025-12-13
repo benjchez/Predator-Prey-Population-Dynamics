@@ -8,7 +8,7 @@ class Grid:
     def __init__(self, o: GraphOptions, p: AnimalParameters):
         self.grid = create_grid(o.col_num, o.row_num, o.init_num_pred, o.init_num_prey)
         self.init_prey = o.init_num_prey
-        self.init_pred = o.init_num_prey
+        self.init_pred = o.init_num_pred
         self.col_num = o.col_num
         self.row_num = o.row_num
         self.a = p.a

@@ -1,5 +1,0 @@
-This time, the populations changed with damped oscillations over time.
-Both populations survived the first wave because of 'appropriate' initial conditions.
-The combinations of parameters and graph size has enabled the populations to survive waves of changing numbers without being wiped out.
-Further, it is interesting how different populations seem to 'build' on one side of the map before taking the whole map over (see time step 716 for example). To further investigate this, we could look at individual grid spaces in the wider grid or smaller grids in the context of a wider grid. Also we could change the rules so that animals can 'leave' the grid and then get spawned at a random place on the grid to simulate emmigration and immigration.
-These two ideas could be compared to each other. If you have a large grid and look at a small section of it, is that the same/similar to having the small section as a grid with migration turned on?

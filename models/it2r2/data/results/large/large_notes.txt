@@ -1,6 +1,0 @@
-Prey's population grows exponentially at the start then falls very fast. This is mirrored by the predator's population which peaks later than the prey's.
-This is because the predator's population is initially small for the size of the map and so prey can grow unbounded at the start.
-We see that, at around time step 75, there is a growing predator population in the centre of the map. This builds quickly because of the number of prey.
-The predator population then spreads throughout the map and there are too many predators for the prey to survive.
-
-This is an example of where low initial conditions (compared to the graph size) makes the population counts very unstable. This is because prey grow very fast and predators struggle (because of low prey to grid space ratio).

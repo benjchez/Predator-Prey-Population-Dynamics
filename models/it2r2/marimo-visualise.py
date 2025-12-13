@@ -10,13 +10,15 @@ def _():
     import matplotlib.pyplot as plt
 
     from Analyser import Analyser
-    from DataHandler import DataHandler
-    return Analyser, DataHandler, mo
+    from FileHelper import FileHelper
+    from EnAData import FiledEnAData
+    from DisplayAnalysis import DisplayAnalysis
+    return DisplayAnalysis, FileHelper, FiledEnAData, mo
 
 
 @app.cell
-def _(DataHandler, mo):
-    dh = DataHandler()
+def _(FileHelper, mo):
+    dh = FileHelper()
 
     look_in = mo.ui.radio(dh.dfos, value = 'output')
     refresh = mo.ui.refresh()
@@ -24,31 +26,43 @@ def _(DataHandler, mo):
 
 
 @app.cell
-def _(Analyser, experiment_radio, subdir):
-    exp_name = experiment_radio.value
-    exp_folder = subdir + '/' + exp_name
-    an = Analyser(exp_folder, exp_name)
-    return (an,)
+def _(DisplayAnalysis, FiledEnAData, experiment_radio, got_experiment, subdir):
+    if got_experiment == True:
+        exp_name = experiment_radio.value
+        exp_folder = subdir
+    
+        FEnAd = FiledEnAData.from_files(data_folder = exp_folder, experiment_name = exp_name)
+        disp = DisplayAnalysis(FEnAd)
+    return (disp,)
 
 
 @app.cell
-def _(an):
-    fig = an.plt_nums()
+def _(disp, got_experiment):
+    if got_experiment == True:
+        fig = disp.plt_popd()
+    else:
+        fig = 'No figure'
     return (fig,)
 
 
 @app.cell
-def _(an, mo):
-    #timestamp1 = mo.ui.slider(start=0, stop = an.nts - 1, step=1, full_width=True)
-    timestamp2 = mo.ui.number(value = 0, stop = an.nts - 1)
-    return (timestamp2,)
+def _(disp, got_experiment, mo):
+    if got_experiment == True:
+        num_time_stamps = disp.ad.infod['number of time stamps']
+
+        num_time_steps = num_time_stamps - 1
+
+        timestamp1 = mo.ui.slider(start=0, stop = num_time_steps, step=1, full_width=True)
+        # timestamp2 = mo.ui.number(value = 0, stop = num_time_steps)
+    return (timestamp1,)
 
 
 @app.cell
-def _(an, timestamp2):
-    #timestamp = timestamp1.value
-    timestamp = timestamp2.value
-    img = an.pmft(timestamp)
+def _(disp, got_experiment, timestamp1):
+    if got_experiment == True:
+        timestamp = timestamp1.value
+        # timestamp = timestamp2.value
+        img = disp.pmft(timestamp)
     return (img,)
 
 
@@ -56,10 +70,14 @@ def _(an, timestamp2):
 def _(dh, look_in, mo, refresh):
     subdir = look_in.value
     experiment_list = dh.expl(subdir)
-
-    experiment_radio = mo.ui.radio(experiment_list, value = experiment_list[0])
+    if len(experiment_list) == 0:
+        experiment_radio = "Choose a folder with experiments saved in it. If no folders have experiments saved in them, run an experiment in marimo-run.py."
+        got_experiment = False
+    else:
+        experiment_radio = mo.ui.radio(experiment_list, value = experiment_list[0])
+        got_experiment = True
     refresh
-    return experiment_radio, subdir
+    return experiment_radio, got_experiment, subdir
 
 
 @app.cell
@@ -81,7 +99,7 @@ def _(look_in, mo):
 @app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
-    ##Experiment folders:
+    ##Experiment:
     """)
     return
 
@@ -102,8 +120,8 @@ def _(mo):
 
 
 @app.cell
-def _(an, mo):
-    mo.ui.table(an.d.popd)
+def _(disp, mo):
+    mo.ui.table(disp.ed.popd)
     return
 
 
@@ -141,9 +159,9 @@ def _(mo):
 
 
 @app.cell
-def _(timestamp2):
-    #timestamp1
-    timestamp2
+def _(timestamp1):
+    timestamp1
+    # timestamp2
     return
 
 
@@ -162,8 +180,8 @@ def _(mo):
 
 
 @app.cell
-def _(an, mo):
-    mo.output.append(an.d.paramd)
+def _(disp, mo):
+    mo.output.append(disp.ed.paramd)
     return
 
 
@@ -176,8 +194,8 @@ def _(mo):
 
 
 @app.cell
-def _(an, mo):
-    text = an.d.notesd
+def _(disp, mo):
+    text = disp.ad.notesd
     text_area = mo.ui.text_area(text)
     mo.output.append(text_area)
     return (text_area,)
@@ -190,10 +208,10 @@ def _(mo, submit_notes_button):
 
 
 @app.cell
-def _(an, mo, text_area):
+def _(disp, mo, text_area):
     def submit_notes(event):
         text = text_area.value
-        an.fd.write_notes(text)
+        disp.fd.FAD.write_notes(text)
         mo.output.append('Submitted!')
 
     submit_notes_button = mo.ui.button(label = 'Save', on_click = submit_notes)
