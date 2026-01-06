@@ -1,0 +1,162 @@
+\documentclass[12pt, a4paper]{article}
+
+% --- Preamble: Load Packages ---
+\usepackage{amsmath}  % Core math package
+\usepackage{amssymb}  % Math symbols
+\usepackage{graphicx} % For images
+\usepackage{geometry} % For margins
+\usepackage{cite}
+
+% --- Title Information ---
+\title{Replication of the Results of the Lotka-Volterra Model of Predator-Prey Dynamics using Stochastic Individual-Based Models}
+\author{Benjamin Chesworth}
+\date{January 2026}
+
+% --- The Body ---
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+There is great importance to the pursuit of understanding of the world around us. The world is occupied by billions and billions of complex life forms, all with their own wants. These competing motivations make for a mess of relationships between different individuals because these wants are not mutually exclusive. Plants fight to get more of the sun, lions eat zebras to steal the nutrition in their body, and humans fight to see who gets the better paid job.
+
+Maybe most surprising of all the relationships that have arisen are the ones that are beneficial to both parties. Many generations of species play 'the game' of life and find the best way to play it. Then their winning strategy is passed on to the next generation through genetics and teaching.
+
+The issue is that the number and complexity of these relationships makes it hard to look at the system as a whole. Trying to accurately reproduce all the phenomena that impact species on earth would be a huge computational undertaking. Further, we may find even after doing it that it does not help us to accurately predict the future anyway because of the butterfly effect. This is a theory that a very small event, like a butterfly flapping its wings, can cause a large effect like a tornado. This means that any small error in your massive computation could mean that the predictions it would give you could be way off.
+
+Mathematical modelling generally solves this complexity problem by finding out which are the most important effectors of a system and focuses on those, neglecting the less important ones. (There is of course much more depth to the discipline but this is a useful simplification.)
+
+An example of a mathematical model is the Lotka-Volterra model of predator-prey dynamics. This uses a coupled system of differential equations to simulate the changes in population numbers of a predator animal and a prey animal over time. We assume that the predator animal is the only predator to the prey and vice versa. In reality this is not usually the case, yet there are cases that this is approximately true for.
+
+Lotka and Volterra discovered this model independently, with Volterra referencing the population dynamics of fish in the First World War as a motivating example \cite{volterra1926}. The selacian group of fish (the 'predators') hunt other types of fish (the 'prey') that are also wanted by humans for food. The constant fishing by humans usually keeps the prey population low. In the First World War, a large amount of the fishing stopped and so it was expected that that the prey population would increase. However, it was found that after the War, the population of prey fish had decreased and the predator fish's population had increased. This can be explained by the predators benefitting from the decrease in competition, their numbers thus increasing, which meant more prey were being eaten.
+
+This is a key pattern that the Lotka-Volterra equations capture, where a rise in the population of the prey species causes an increase in the number of predators which leads to less prey which will then eventually lead to predators starving. This is modelled as a periodic occurrence by the equations.
+
+In this report we will create a few different individual based models that will behave similarly to the world that the LV model describes. The LV model describes the populations of prey and predators as two blocks whereas our individual based model will represent each animal individually. The benefit of this is that we get a better look at the dynamics happening within these populations, and it opens up the possibility of differentiating between different members of the same species in terms of traits. The drawback is that the model becomes much more computationally complex and that the results of the model become much less refined.
+
+It is useful to create models using different techniques. The more ways that we can observe and break down a problem, the better our understanding is. In the attempt to map an individual based model to the LV model we will uncover some of the drawbacks of the model. We will also look at how a more complicated model can make up some of the shortcomings of the LV model.
+
+\section{Solving the Lotka-Volterra Equations}
+\subsection{Deriving the equations}
+The LV equations attempt to model the change in population of two species over time. These two species have a predator-prey relationship to each other. We assume that the prey species are the predators' only food source and this species of predator is the only species that is a predator to the prey. Therefore, there are no animals that affect our model except the ones that are being modelled.
+
+Let us call the number of prey $x$ and the number of predators $y$. In our model we assume that these numbers are continuous for simplicity. The larger the size of the population we are modelling, the more valid this assumption is as we can let one prey in our model represent 1000 prey in the real world, say.
+
+In our model $x$ and $y$ are a function of time so at time $t$, $x=x(t)$ and $y=y(t)$.
+
+Over time, we assume that the prey population reproduces at a rate proportional to its own population size. This is based on the assumption that each individual prey has the same rate of reproduction. We model this rate of reproduction continuously.
+
+Further, we assume that each prey's rate of reproduction does not change over time. This relies on the assumption that the reproduction rate of an individual prey does not change with respect to changing prey population size. This is a drawback of the model because, without predator interference, the prey's population is allowed to grow unbounded and exponentially which is unrealistic. There is no defined 'carrying capacity' of the environment.
+
+We take $\alpha > 0$ to be this rate of reproduction per prey. So, without any predators, the change in the number of prey over a small amount of time $\Delta t$ is
+\begin{equation}
+x(t + \Delta t) = x(t) + \Delta t \times \alpha \times x(t).
+\end{equation}
+
+For the predators, we will assume that each predator has the same death rate, $\gamma > 0$, and this rate stays constant as well. So without any prey, the number of predators will exponentially decrease. For a small $\Delta t$,
+\begin{equation}
+y(t + \Delta t) = y(t) - \Delta t \times \gamma \times y(t).
+\end{equation}
+
+To model the effect of the predators and prey on each other's population size, we assume that there is a constant rate of death per prey when it is found by a predator, $\beta > 0$, and a constant rate of reproduction for a predator when it finds a prey $\delta > 0$. The idea behind this is that the predator uses the energy it gets from eating a prey to reproduce (at a certain rate).
+
+We assume that the rate at which prey and predators meet is equal to their populations multiplied together. We model the change in prey pop over small time $\delta t$ due to predation by
+\begin{equation}
+x(t + \Delta t) = x(t) - \Delta t \times \beta \times x(t) \times y(t)
+\end{equation}
+and the change in the size of the predator population due to reproduction by
+\begin{equation}
+y(t + \Delta t) = y(t) + \Delta t \times \delta \times x(t) \times y(t).
+\end{equation}
+
+We assume that only the mechanisms outlined above cause an effect on the population sizes of the animals. This means that we are neglecting the effects of immigration and emmigration to the system and so in that sense our system is closed.
+
+We therefore have for a small $\Delta t$,
+\begin{align}
+x(t + \Delta t) &= x(t) + \Delta t \times \alpha \times x(t) - \Delta t \times \beta \times x(t) \times y(t) \text{ and} \\
+y(t + \Delta t) &= y(t) - \Delta t \times \gamma \times y(t) + \Delta t \times \delta \times x(t) \times y(t).
+\end{align}
+
+By taking $\Delta t \rightarrow 0$, we get two differential equations describing the change in the two populations $x$ and $y$ over time
+\begin{align}
+\dot{x} &= \alpha x - \beta x y \text{ and} \\
+\dot{y} &= - \gamma y + \delta x y
+\end{align}
+using the dot notation to signify derivatives with respect to time.
+
+These are the famous Lotka-Volterra equations \cite{JeffChasLV}.
+
+\subsection{Analysing the equations}
+We firstly want to find the stationary points of the system. We set $\dot{x} = \dot{y} = 0$ which gives us
+\begin{align}
+- \gamma y + \delta x y = 0 \text{ and } \alpha x - \beta x y = 0 \\
+\Rightarrow y(-\gamma + \delta x) = 0 \text{ and } x(\alpha - \beta y) = 0.
+\end{align}
+Thus, the stationary points are
+\begin{equation}
+(0,0) \text{ or } (\frac{\gamma}{\delta},\frac{\alpha}{\beta}).
+\end{equation}
+
+We next want to find out the stability of these stationary points. We can represent the ODEs as $\dot{x} = f(x, y)$ and $\dot{y} = g(x, y)$. As these do not depend on time, they are called a coupled system of autonomous equations.
+
+To analyse the stability of stationary points for autonomous equations in general, we look at two small perturbations $c$ and $d$ from a fixed point $(x_*, y_*)$ and how $x$ and $y$ change over time after this small perturbation.
+
+We define the perturbations in the $x$ and $y$ directions from the fixed point over time caused by the initial perturbations as $\epsilon$ and $\delta$ respectively such that
+\begin{equation}
+\epsilon (t) = x(t) - x_* \text{ and } \delta (t) = y(t) - y_*
+\end{equation}
+where $\epsilon(0) = c$ and $\delta(0) = d$.
+
+We have that
+\begin{align}
+\dot{\epsilon} &= \frac{d}{dt}(x(t)-x_*) \text { and} \\
+\dot{\delta} &= \frac{d}{dt}(y(t) - x_*)
+\end{align}
+and since $x_*$ and $y_*$ are constants it follows that $\dot{\epsilon} = \dot{x}$ and $\dot{\delta} = \dot{y}$.
+We thus have that $\dot{\epsilon} = f(x,y)$ and $\dot{\delta} = g(x,y)$, and since $x = x_* + \epsilon$ and $y = y_* + \delta$, we know that
+\begin{align}
+\dot{\epsilon} &= f(x_* + \epsilon, y_* + \delta) \text( and) \\
+\dot{\delta} &= g(x_* + \epsilon, y_* + \delta).
+\end{align}
+In our stability analysis we assume $t$ to be small meaning that we can take the Taylor Expansion around $t = 0$ for $f$ and $g$.
+
+TODO: Finish derivation
+
+\section{Individual based models}
+\subsection{Rules}
+TODO: Write out rules fully and make illustrations for them.
+
+n by m grid
+
+Initially, x prey and y predators are placed randomly on the grid
+
+grid points can hold multiple animals
+
+Time is discrete (turn based)
+
+Every turn, each animal randomly moves 1 consecutive grid point away from its current position (where possible)
+
+Once they have moved, if a prey and a predator have landed on the same spot, there is a probability a that the prey dies and probability b that another predator spawns on the same spot
+
+If there are more than one prey and one predator on a grid, the preys and predators form pairs and any left over animals are untouched.
+
+ After this, any prey left alive have a probability c of spawning another prey on the same spot
+
+Any predators left alive have a probability d of dying (ie being deleted off the grid).
+
+\subsection{What to do with multiple animals in one spot}
+TODO: Explain change of models based on change of thinking and explain why have chosen what I am going for, and why it doesn't really matter if the graphs are bigger (less discrete)
+
+\section{The potential paths of this project}
+More analysis of simulation eg bigger Vs smaller maps, small maps within bigger ones
+
+Set up neural network to estimate result of simulation from initial conditions
+
+Create iteration that simulates immigration and emmigration through letting animals step off the map and randomly pop up at other outside points in the map
+
+Create an iteration that tries to fix the issues inherent with the LV model eg unbounded growth of prey, no evolution/natural selection, give animals autonomy by allowing them to 'sense' their local neighbourhood and make decisions based on sense data
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

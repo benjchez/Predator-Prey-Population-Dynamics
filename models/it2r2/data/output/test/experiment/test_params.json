@@ -1,1 +1,0 @@
-{"Animal options": {"a": 0.5, "b": 0.1, "c": 0.05, "d": 0.02}, "Graph options": {"col_num": 20, "row_num": 20, "init_num_pred": 30, "init_num_prey": 50}, "Experiment options": {"experiment_name": "test", "num_turns": 102}}
