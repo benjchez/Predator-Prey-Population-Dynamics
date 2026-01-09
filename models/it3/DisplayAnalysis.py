@@ -1,5 +1,7 @@
 import numpy as np
+from pathlib import Path
 
+import matplotlib.animation as animation
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 
@@ -89,3 +91,27 @@ class DisplayAnalysis:
         """
         self.pmft(timestamp)
         plt.show()
+
+    def save_point_map_video(self):
+        number_of_timestamps = len(self.ad.pmd)
+
+        artists = []
+
+        fig, ax = plt.subplots()
+
+        for timestamp in range(number_of_timestamps):
+            pm_ft = self.ad.pmd[timestamp]
+            arr = np.array(pm_ft)
+            container = ax.imshow(arr)
+            artists.append([container])
+            
+        
+        self.animation = animation.ArtistAnimation(fig = fig, artists = artists, interval = 200)
+
+        filepath = Path(__file__).parent / 'misc'
+        name = "test.mp4"
+        filename = filepath / name
+        # self.animation.save(filename = filename, writer = "pillow")
+        self.animation.save(filename = filename, writer="ffmpeg", bitrate=-1)
+        # dpi = 300
+        

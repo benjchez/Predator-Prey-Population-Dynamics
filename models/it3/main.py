@@ -14,23 +14,23 @@ from Experimenter import Experimenter
 from ExperimentData import ExperimentData
 from ExperimentOptions import ExperimentOptions
 from Analyser import Analyser
-from EnAData import EnAData
+from EnAData import EnAData, FiledEnAData
 from DisplayAnalysis import DisplayAnalysis
 from DisplayTogether import DisplayTogether
 
 # Parameters
 a = 0.8 # Probability that if a prey gets paired with a predator, it will die
-b = 0.6 # Probability that if a predator gets paired with a prey, it will reproduce
-c = 0.3 # Probability that a prey will reproduce
-d = 0.2 # Probability of death for a predator
+b = 0.2 # Probability that if a predator gets paired with a prey, it will reproduce
+c = 0.2 # Probability that a prey will reproduce
+d = 0.1 # Probability of death for a predator
 
 # Graph options
-col_num = row_num = 15 # row_num by column_num grid
-initial_num_predators = 60
-initial_num_prey = 150
+col_num = row_num = 40 # row_num by column_num grid
+initial_num_predators = 300
+initial_num_prey = 600
 
 # Experiment options
-num_turns = 100 # Number of turns
+num_turns = 200 # Number of turns
 experiment_name = 'same_ic'
 
 experiment_folder = 'output'
@@ -40,21 +40,34 @@ options = GraphOptions(col_num, row_num, initial_num_predators, initial_num_prey
 exops = ExperimentOptions(experiment_name, num_turns)
 
 if __name__ == '__main__':
-    FDlist = []
-
     experiment = Experimenter(options, parameters, exops)
-    list_of_ed = experiment.run_experiments_same_parameters_and_ic(5)
-    for i, ed in enumerate(list_of_ed):
-        analyse = Analyser(ed)
-        ad = analyse.analyse()
-        EnAd = EnAData(ed = ed, ad = ad)
-        FEnAd = EnAd.to_files()
 
-        FDlist.append(FEnAd) 
+    # FDlist = []
 
-        displayer = DisplayAnalysis(
-            FEnAd = FEnAd
-        )
-    DT = DisplayTogether(FDlist)
-    DT.prey_timeseries()
-    plt.show()
+    # list_of_ed = experiment.run_experiments_same_parameters_and_ic(5)
+    # for i, ed in enumerate(list_of_ed):
+    #     analyse = Analyser(ed)
+    #     ad = analyse.analyse()
+    #     EnAd = EnAData(ed = ed, ad = ad)
+    #     FEnAd = EnAd.to_files()
+
+    #     FDlist.append(FEnAd) 
+
+    #     displayer = DisplayAnalysis(
+    #         FEnAd = FEnAd
+    #     )
+    # DT = DisplayTogether(FDlist)
+    # DT.prey_timeseries()
+    # plt.show()
+
+    # ed = experiment.run_experiment()
+    # analyse = Analyser(ed)
+    # ad = analyse.analyse()
+    # EnAd = EnAData(ed = ed, ad = ad)
+    # FEnAd = EnAd.to_files()
+
+    FEnAd = FiledEnAData.from_files('output', 'big-5000turns')
+
+    displayer = DisplayAnalysis(FEnAd = FEnAd)
+    displayer.save_point_map_video()
+
