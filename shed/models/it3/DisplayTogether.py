@@ -1,14 +1,28 @@
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 
+from DisplayAnalysis import DisplayAnalysis
 from EnAData import FiledEnAData
 
 class DisplayTogether:
     def __init__(
             self,
-            list_of_FEnAd: list[FiledEnAData],
+            list_of_FEnAD: list[FiledEnAData],
     ):
-        self.l = list_of_FEnAd
+        self.l = list_of_FEnAD
+
+    @classmethod
+    def from_displayers(
+            cls,
+            list_of_displayers: list[DisplayAnalysis]
+    ) -> "DisplayTogether":
+        list_of_FEnAD: list[FiledEnAData] = []
+        for displayer in list_of_displayers:
+            list_of_FEnAD.append(displayer.fd)
+        
+        return cls(
+            list_of_FEnAD = list_of_FEnAD,
+        )
 
     def prey_timeseries(self) -> Figure:
 

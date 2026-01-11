@@ -76,7 +76,7 @@ class Experimenter:
     def run_experiments_same_parameters_diff_ic(
             self,
             number_of_experiments: int
-    ):
+    ) -> list[ExperimentData]:
         list_of_ED = [] # List of data from experiments
 
         experiment_name = self.e.experiment_name
@@ -90,7 +90,7 @@ class Experimenter:
     def run_experiments_same_parameters_and_ic(
             self,
             number_of_experiments: int
-    ):
+    ) -> list[ExperimentData]:
         list_of_ED = [] # List of data from experiments
 
         init_grid = Grid(self.o, self.p)

@@ -17,6 +17,7 @@ from Analyser import Analyser
 from EnAData import EnAData, FiledEnAData
 from DisplayAnalysis import DisplayAnalysis
 from DisplayTogether import DisplayTogether
+from Recipes import Recipes
 
 # Parameters
 a = 0.8 # Probability that if a prey gets paired with a predator, it will die
@@ -40,34 +41,11 @@ options = GraphOptions(col_num, row_num, initial_num_predators, initial_num_prey
 exops = ExperimentOptions(experiment_name, num_turns)
 
 if __name__ == '__main__':
-    experiment = Experimenter(options, parameters, exops)
-
-    # FDlist = []
-
-    # list_of_ed = experiment.run_experiments_same_parameters_and_ic(5)
-    # for i, ed in enumerate(list_of_ed):
-    #     analyse = Analyser(ed)
-    #     ad = analyse.analyse()
-    #     EnAd = EnAData(ed = ed, ad = ad)
-    #     FEnAd = EnAd.to_files()
-
-    #     FDlist.append(FEnAd) 
-
-    #     displayer = DisplayAnalysis(
-    #         FEnAd = FEnAd
-    #     )
-    # DT = DisplayTogether(FDlist)
-    # DT.prey_timeseries()
-    # plt.show()
-
-    # ed = experiment.run_experiment()
-    # analyse = Analyser(ed)
-    # ad = analyse.analyse()
-    # EnAd = EnAData(ed = ed, ad = ad)
-    # FEnAd = EnAd.to_files()
-
-    FEnAd = FiledEnAData.from_files('output', 'big-5000turns')
-
-    displayer = DisplayAnalysis(FEnAd = FEnAd)
+    cook = Recipes()
+    displayer = cook.run_and_display(
+        graph_options = options,
+        animal_parameters = parameters,
+        experiment_options = exops
+    )
     displayer.save_point_map_video()
 

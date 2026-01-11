@@ -19,11 +19,11 @@ class DisplayAnalysis:
 
     def __init__(
             self,
-            FEnAd: FiledEnAData,
+            FEnAD: FiledEnAData,
     ):
-        self.fd = FEnAd
-        self.ed = FEnAd.FED.d
-        self.ad = FEnAd.FAD.d
+        self.fd = FEnAD
+        self.ed = FEnAD.FED.d
+        self.ad = FEnAD.FAD.d
     
 
 
@@ -108,10 +108,13 @@ class DisplayAnalysis:
         
         self.animation = animation.ArtistAnimation(fig = fig, artists = artists, interval = 200)
 
-        filepath = Path(__file__).parent / 'misc'
-        name = "test.mp4"
-        filename = filepath / name
+        name = "pointmap.mp4"
+        folderpath = self.fd.dir / 'plots'
+        filepath = folderpath / name
+
+        folderpath.mkdir(parents=True, exist_ok=True)
+
         # self.animation.save(filename = filename, writer = "pillow")
-        self.animation.save(filename = filename, writer="ffmpeg", bitrate=-1)
+        self.animation.save(filename = filepath, writer="ffmpeg", bitrate=-1)
         # dpi = 300
         
