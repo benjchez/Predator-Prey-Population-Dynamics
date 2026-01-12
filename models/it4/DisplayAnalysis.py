@@ -94,7 +94,9 @@ class DisplayAnalysis:
     def save_all_plots(self):
         self.save_point_map_video()
         self.save_population_time_series()
+        self.save_population_time_series_png()
         self.save_phase_portrait()
+        self.save_phase_portrait_png()
 
     def save_point_map_video(self):
         number_of_timestamps = len(self.ad.pmd)
@@ -136,6 +138,21 @@ class DisplayAnalysis:
         fig.savefig(
             fname = filepath,
         )
+    
+    def save_population_time_series_png(
+            self,
+    ):
+        fig = self.plt_popd()
+
+        filename = "pop-ts.png"
+        folderpath = self.fd.dir / 'plots'
+        filepath = folderpath / filename
+
+        folderpath.mkdir(parents=True, exist_ok=True)
+
+        fig.savefig(
+            fname = filepath,
+        )
         
     def save_phase_portrait(
             self,
@@ -143,6 +160,21 @@ class DisplayAnalysis:
         fig = self.plt_phase_portrait()
 
         filename = "phase-portrait.pdf"
+        folderpath = self.fd.dir / 'plots'
+        filepath = folderpath / filename
+
+        folderpath.mkdir(parents=True, exist_ok=True)
+
+        fig.savefig(
+            fname = filepath,
+        )
+
+    def save_phase_portrait_png(
+            self,
+    ):
+        fig = self.plt_phase_portrait()
+
+        filename = "phase-portrait.png"
         folderpath = self.fd.dir / 'plots'
         filepath = folderpath / filename
 

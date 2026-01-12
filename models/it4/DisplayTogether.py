@@ -115,6 +115,24 @@ class DisplayTogether:
             fname = filepath,
         )
 
+    def save_prey_time_series_png(
+            self,
+            ymax: int | None = None,
+        ):
+
+        fig = self.prey_time_series(ymax)
+
+        filename = self.root_name + "-prey-ts.png"
+        folderpath = Path(__file__).parent / 'together_plots'
+        filepath = folderpath / filename
+
+        folderpath.mkdir(parents=True, exist_ok=True)
+
+        fig.savefig(
+            fname = filepath,
+        )
+
+
     def save_pred_time_series(
             self,
             ymax: int | None = None,
@@ -123,6 +141,23 @@ class DisplayTogether:
         fig = self.pred_time_series(ymax)
 
         filename = self.root_name + "-pred-ts.pdf"
+        folderpath = Path(__file__).parent / 'together_plots'
+        filepath = folderpath / filename
+
+        folderpath.mkdir(parents=True, exist_ok=True)
+
+        fig.savefig(
+            fname = filepath,
+        )
+
+    def save_pred_time_series_png(
+            self,
+            ymax: int | None = None,
+        ):
+
+        fig = self.pred_time_series(ymax)
+
+        filename = self.root_name + "-pred-ts.png"
         folderpath = Path(__file__).parent / 'together_plots'
         filepath = folderpath / filename
 

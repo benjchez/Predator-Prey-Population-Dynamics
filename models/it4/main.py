@@ -50,6 +50,5 @@ if __name__ == '__main__':
         root_name = 'diff-ic',
     )
 
-    DT.save_prey_time_series(ymax = None)
-    DT.save_pred_time_series(ymax = None)
+    DT.save_prey_time_series_png()
 
