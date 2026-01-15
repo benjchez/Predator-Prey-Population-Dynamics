@@ -16,19 +16,19 @@ from DisplayTogether import DisplayTogether
 from Recipes import Recipes
 
 # Parameters
-a = 0.8 # Probability that if a prey gets paired with a predator, it will die
-b = 0.2 # Probability that if a predator gets paired with a prey, it will reproduce
-c = 0.2 # Probability that a prey will reproduce
-d = 0.1 # Probability of death for a predator
+a = 0.3 # Probability that if a prey gets paired with a predator, it will die
+b = 0.05 # Probability that if a predator gets paired with a prey, it will reproduce
+c = 0.02 # Probability that a prey will reproduce
+d = 0.005 # Probability of death for a predator
 
 # Graph options
-col_num = row_num = 40 # row_num by column_num grid
-initial_num_predators = 500
-initial_num_prey = 2000
+col_num = row_num = 15 # row_num by column_num grid
+initial_num_predators = 10
+initial_num_prey = 30
 
 # Experiment options
-num_turns = 300 # Number of turns
-experiment_name = 'diff-ic'
+num_turns = 2000 # Number of turns
+experiment_name = 'low-death'
 
 experiment_folder = 'output'
 
@@ -45,10 +45,11 @@ if __name__ == '__main__':
     #     number_of_experiments = 5,
     #     same_initial_conditions = False,
     # )
-    DT, ld = cook.display_consecutives_from_files(
-        data_folder = 'output',
-        root_name = 'diff-ic',
+    displayer = cook.run_and_display(
+        graph_options = options,
+        animal_parameters = parameters,
+        experiment_options = exops,
     )
 
-    DT.save_prey_time_series_png()
+    displayer.save_all_plots()
 
