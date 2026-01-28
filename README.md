@@ -37,5 +37,5 @@ Run deactivate to deactivate the environment
 Results from models before it2r2 cannot be trusted as there was a bug where initial predator count was set to equal the initial prey count.
 
 ## TODO and ideas
-
+Stop adding the historical grids all to one variable and instead write the them to file every so often to massively reduce the space complexity.
 
