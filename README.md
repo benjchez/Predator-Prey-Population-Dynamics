@@ -37,5 +37,5 @@ Run deactivate to deactivate the environment
 Results from models before it2r2 cannot be trusted as there was a bug where initial predator count was set to equal the initial prey count.
 
 ## TODO and ideas
-work out how to make point map images into video.
+
 
