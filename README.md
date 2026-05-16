@@ -8,6 +8,13 @@ We provide three Marimo notebooks that allow us to conduct experiments, visualis
 
 ### Initial Setup
 
+We first need to download a copy of the code. This can be done in two ways:
+
+1. Running `git clone https://github.com/benjchez/Predator-Prey-Population-Dynamics.git` in your terminal, or by
+2. Pressing the green **code** button in GitHub and then in the dropdown, pressing **Download Zip** and then unzipping the download.
+
+Once the code is downloaded, please enter the downloaded folder on your terminal.
+
 This repository uses `uv` to manage the Python enviroment. Instructions to install `uv` can be found here: [UV Installation](https://docs.astral.sh/uv/getting-started/installation/).
 
 Once `uv` has been installed, please run `uv sync` in the command line to sync the python environment. This makes sure that the correct Python packages are installed to run the code.
